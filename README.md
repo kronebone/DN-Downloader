@@ -2,7 +2,7 @@
 Script for daily downloading of Democracy Now.
 
 ## Usage
-python democracy_now_downloader.py
+    python democracy_now_downloader.py
 
 ## Options
 DN-Downloader can be run with or without the following command line options:
