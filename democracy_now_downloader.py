@@ -1,3 +1,4 @@
+import argparse
 import datetime
 import os
 import requests
@@ -6,7 +7,7 @@ from time import sleep
 
 
 class DNApp:
-    def __init__(self, save_file_path=None, share_path=None):
+    def __init__(self, save_file_path, share_path):
         if save_file_path is None:
             self.save_file_path = os.getcwd()
         else:
@@ -102,5 +103,9 @@ class DNApp:
 
 
 if __name__ == '__main__':
-    app = DNApp()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-sv', '--save_path', help='add a specific path to save the file to', type=str)
+    parser.add_argument('-sh', '--share_path', help='add a specific path to move the completed file to', type=str)
+    args = parser.parse_args()
+    app = DNApp(save_file_path=args.save_path, share_path=args.share_path)
     app.run()
