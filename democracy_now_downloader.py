@@ -7,7 +7,8 @@ from time import sleep
 
 
 class DNApp:
-    def __init__(self, save_file_path, share_path):
+    def __init__(self, get_hd_file, save_file_path, share_path):
+        self.get_hd = get_hd_file
         if save_file_path is None:
             self.save_file_path = os.getcwd()
         else:
@@ -58,7 +59,10 @@ class DNApp:
             day = '0' + str(day)
         # Democracy now does not produce new episodes on weekends so they are skipped
         if datetime.date(year, int(month), int(day)).weekday() < 6:
-            demo_now_url = 'https://publish.dvlabs.com/democracynow/360/dn{}-{}{}.mp4'.format(year, month, day)
+            if self.get_hd:
+                demo_now_url = 'https://publish.dvlabs.com/democracynow/720/dn{}-{}{}.mp4'.format(year, month, day)
+            else:
+                demo_now_url = 'https://publish.dvlabs.com/democracynow/360/dn{}-{}{}.mp4'.format(year, month, day)
             # An attempt is made to open specified save directory, defaults to cwd upon failure
             try:
                 os.chdir(self.save_file_path)
@@ -73,16 +77,13 @@ class DNApp:
             demo_now_file = 'dn{}-{}{}.mp4'.format(year, month, day)
             file_info = os.stat(demo_now_file)
             file_size = self.convert_bytes(file_info.st_size)
-            if os.path.exists(demo_now_file) and 'MB' in file_size:
+            if os.path.exists(demo_now_file):
                 print('Download complete for {}/{}/{},'.format(month, day, year), 'File size:', file_size)
                 if self.share_path is not None:
                     self.move_file(year, month, day)
-            elif os.path.exists(demo_now_file) and 'MB' not in file_size:
-                # if the file is too small it is likely incomplete and is deleted
-                os.remove(demo_now_file)
-                print('No file downloaded for {}/{}/{}'.format(month, day, year))
 
     def run(self):
+        print('Democracy Now downloader started:', str(datetime.datetime.today())[:-7])
         while True:
             today = datetime.datetime.today()
             hour_now = today.hour
@@ -91,7 +92,7 @@ class DNApp:
             # setting up the three hour window in which the download will be attempted
             # this window was chosen to ensure enough time has passed for the episode to become available online
             eleven_thirty_am = datetime.time(hour=11, minute=30)
-            two_thirty_pm = datetime.time(hour=14, minute=30)
+            two_thirty_pm = datetime.time(hour=16, minute=30)
             # checking if the current time is during specified hours, if so, download is attempted
             if eleven_thirty_am < current_time < two_thirty_pm:
                 self.get_democracy_now()
@@ -104,8 +105,9 @@ class DNApp:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('-hd', '--get_hd', help='set to True to get hd file instead of web quality file', type=bool)
     parser.add_argument('-sv', '--save_path', help='add a specific path to save the file to', type=str)
     parser.add_argument('-sh', '--share_path', help='add a specific path to move the completed file to', type=str)
     args = parser.parse_args()
-    app = DNApp(save_file_path=args.save_path, share_path=args.share_path)
+    app = DNApp(get_hd_file=args.get_hd, save_file_path=args.save_path, share_path=args.share_path)
     app.run()
