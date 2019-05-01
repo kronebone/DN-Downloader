@@ -92,7 +92,7 @@ class DNApp:
             # setting up the three hour window in which the download will be attempted
             # this window was chosen to ensure enough time has passed for the episode to become available online
             eleven_thirty_am = datetime.time(hour=11, minute=30)
-            two_thirty_pm = datetime.time(hour=16, minute=30)
+            two_thirty_pm = datetime.time(hour=14, minute=30)
             # checking if the current time is during specified hours, if so, download is attempted
             if eleven_thirty_am < current_time < two_thirty_pm:
                 self.get_democracy_now()
