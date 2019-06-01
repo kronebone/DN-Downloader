@@ -11,4 +11,4 @@ DN-Downloader can be run with or without the following command line options:
 
     -sv --save_path "path to save video file"
   
-    -sh --share_path "path to share video file to after downloading"
+    -sh --share_path "path to move video file to after downloading"
